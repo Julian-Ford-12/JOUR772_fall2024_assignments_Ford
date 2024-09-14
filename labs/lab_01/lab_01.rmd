@@ -60,7 +60,7 @@ arrange(desc(mean_seats))
 
 ```{r}
 umd_courses |>
-group_by(term)|> 
+group_by(title)|> 
   summarise(
     count_classes=n()
   )|>
