@@ -62,9 +62,9 @@ arrange(desc(mean_seats))
 umd_courses |>
 group_by(term)|> 
   summarise(
-    max_seats = max(seats)
+    count_classes=n()
   )|>
-  arrange(desc(max_seats))
+  arrange(desc(count_classes))
   
 ```
 
