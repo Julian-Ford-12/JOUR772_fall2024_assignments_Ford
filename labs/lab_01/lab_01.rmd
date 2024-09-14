@@ -75,6 +75,12 @@ group_by(title)|>
 ### **Q3** Count the number of courses for each instructor and department. Which instructor has taught the most?
 
 ```{r}
+umd_courses |>
+  group_by(instructors)|>
+  summarise(
+    count_instructors=n()
+  )|>
+arrange(desc(count_instructors))
 
 ```
 
