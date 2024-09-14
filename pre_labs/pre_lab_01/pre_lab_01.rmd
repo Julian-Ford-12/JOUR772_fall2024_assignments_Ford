@@ -18,7 +18,7 @@ Running this notebook will help you understand key data analysis methods and con
 
 When you are finished running the code in this notebook, you will push changes to your course GitHub repo, and upload the link to ELMS as instructed.
 
-You also should update your class reference notebook with code examples and what they mean. When you come across a new concept or R verb, put it in your reference notebook along with a sentence about what it does. For example:
+You also should update your clas2s reference notebook with code examples and what they mean. When you come across a new concept or R verb, put it in your reference notebook along with a sentence about what it does. For example:
 
 ```{r}
 library(tidyverse)
@@ -55,7 +55,7 @@ number * number
 
 What does it return? Type your answer below:
 
-**Answer:**
+**Answer: 4**
 
 ### Task 3: Install packages
 
@@ -105,6 +105,10 @@ glimpse(umd_courses)
 
 In the space below, write the data type for the "id" column and the "seats" column (it's in light gray, offset by \< \>). **Answer**
 
+ID column data type: chr
+
+seats data type: dbl
+
 ### Task 7: Examine data "head"
 
 **Task** Run the following codeblock to use head() to examine the first six rows of data. Explore the data by clicking the black arrow on the right side of the output table, allowing you to examine additional columns.
@@ -114,6 +118,8 @@ head(umd_courses)
 ```
 
 In the space below, write the name of the business from the first row of the "name" column. **Answer**
+
+Michelle Morrison (? Didn't see a "name" column, only instructors.)
 
 ### Task 8: Explore data with interactive dataframe
 
@@ -139,6 +145,12 @@ Describe what you think each line of this code is doing below, based on the resu
 
 **Answer**
 
+group_by(term): creates a row grouped entirely by terms;
+
+summarise: quantifies the results of another function
+
+count_classes = n(): creates a row for the n() function, which counts how many observations there were per the term grouping
+
 ### Task 10: Adding arrange to sort the data
 
 **Task** Run the following codeblock:
@@ -153,6 +165,8 @@ umd_courses |>
 ```
 
 Compared to the previous codeblock, what has changed and how did that affect the result? **Answer**
+
+Although it gives the same data set, this one is arranged in descending order, specifically by class count.
 
 ### Task 11: Grouping by multiple columns
 
@@ -171,6 +185,8 @@ Compared to the previous codeblock, how did the output change and what in the co
 
 **Answer**
 
+**The output changed to show both the amount of observations within the term and department variables. This was a result of "department" being added to the group_by() and arrange() functions**
+
 ### Task 12: Other summary functions
 
 **Task** Run the following codeblock:
@@ -186,6 +202,8 @@ umd_courses |>
 ```
 
 Compared to the previous codeblock, what has changed and how did that affect the result? **Answer**
+
+We added a seperate row with the "total_seats = sum(seats)" line, and then arranged the data set to descend with the seat count.
 
 ### Task 13: different kinds of summarizations
 
@@ -205,6 +223,8 @@ umd_courses |>
 
 Compared to the previous codeblock, what has changed and how did that affect the result? What do the top terms have in common? **Answer**
 
+This dataset added the mean and median seat counts for every term.
+
 ### Task 14: more aggregations
 
 **Task** Run the following codeblock to group the umd_courses dataframe by the department. Then do the following summarizations for each group: count the number of courses, add up the total of all seats, calculate the mean and median number of seats and then add lines to calculate the smallest and largest seat numbers using the `min()` and `max()` functions. Then sort so the department with the largest total number of seats is listed first.
@@ -217,15 +237,15 @@ umd_courses |>
     total_seats = sum(seats),
     mean_seats = mean(seats),
     median_seats = median(seats),
-    # add minimum seats here
-    # add maximum seats here
+    min(seats),
+    max(seats)
   ) |>
   arrange(desc(total_seats))
 ```
 
 Compared to the previous codeblock, what has changed and how did that affect the result? How is the data sorted?
 
-**Answer**
+**Answer The min/max functions added two rows, showing the minimum and maximum amount of seats per department.**
 
 ### Task 12: Questions
 
@@ -233,8 +253,8 @@ No code here; I want you to provide three questions that this data suggests to y
 
 **Answer**
 
-1.  
+1.  What could all the "0" observations in the min_seats row imply?
 
-2.  
+2.  How might COVID-year terms compare to non-COVID-year terms when it comes to seat count?
 
-3.  
+3.  Which departments have, on average, the lowest and highest min/max seat counts?
