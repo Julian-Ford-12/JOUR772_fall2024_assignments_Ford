@@ -24,7 +24,7 @@ Remember to add any new verbs or concepts to your class reference notebook!
 
 ```{r}
 # Load the tidyverse. If you have not installed the tidyverse already, remove the # from the next line and run it first.  
-# install.packages('tidyverse')
+install.packages('tidyverse')
 library(tidyverse)
 ```
 
@@ -52,7 +52,7 @@ arrange(desc(mean_seats))
 
 ```
 
-**A1**
+**A1 It appears that the "Engineering, Co-op Education" department has the highest average seat number from department to department overall. This isn't what I was expecting, but actually seeing it, I suppose it makes sense. Some research told me that "cooperative education" is some kind of internship-focused course pathway within the engineering program, so it would make sense that they might be an outlier – multiple internships per semester, an outside influence from non-university employers, etc etc.**
 
 ------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ group_by(title)|>
   
 ```
 
-**A2**
+**A2 When grouping by title and no other variable, it appears that a class called "Doctoral Dissertation Research" has been offered a grand total of 1303 times. This should be shocking to nobody – whereas other classes may or may not be offered from one semester to the other depending on departmental factors, doctoral research would be a necessary campus-wide offering for any and all graduate students shooting for a Ph.D.**
 
 ------------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ arrange(desc(count_instructors))
 
 ```
 
-**A3**
+**A3 When grouping just by instructors, it would appear that Elsa Barkley Brown has the most courses under her belt since 2017 – a whopping 73. With that said, a cute secondary detail: when grouping by both department and instructor, Keith Yearwood has the most – only 61. I have to imagine that Elsa Barkley Brown has some interdisciplinary courses, perhaps teaching courses for two or three seperate departments at the same time. This is all complicated by the fact that professors "N/A" and "Instructor TBA" have, far and away, the most courses: 10996 and 764, respectively. I imagine these are courses that only got their instructors after the initial registration period.**
 
 ------------------------------------------------------------------------
 
@@ -94,14 +94,24 @@ arrange(desc(count_instructors))
 
 ```
 
-**A4**
+**A4 I suppose finding a way to filter through the "N/A" and "instructor TBA" observations would have made this a much "cleaner" task – it would make the data a bit easier to digest.**
 
 ------------------------------------------------------------------------
 
 ### **Q5** Take one of the questions you listed in the final question of the pre_lab and try to answer it here in code. If you don't know how to fully answer it, write what code you can and describe in words what else you would need to do. If you got an answer, is it interesting?
 
+Q: How might COVID-year terms compare to non-COVID-year terms when it comes to seat count?
+
 ```{r}
+umd_courses |>
+  group_by(term)|>
+  summarise(
+    total_seats=sum(seats),
+    mean_seats=mean(seats),
+    max_seats=max(seats)
+  )|>
+  arrange(desc(term))
 
 ```
 
-**A5**
+**A5 The code that I have above does what it can to address seat disparities between pre & post COVID semesters. It successfully displays seat averages, maximum seat counts, and total seat numbers, from one semester to another – I found that there was no use using the "min_seat=min(seat)" function, because every semester inevitably has at least one class that offers 0 seats. Therefore, the minimum function was pretty useless here. My code does an okay job at displaying the raw data from one semester from another, but I can't help but feel that there are deeper mathematical functions that could break this question down even further: comparing seat amount ratios from 2018-2019-2020 and contrasting them with 2020-2021-2022 seat amounts; finding a way to account for the summer/winter semesters (which always end with 05 & 12, respectively) and filtering those numbers into their own groups for comparison; finding a way to filter out the "0 seat min" courses so that I might find a more useful way to apply the minimum function.**
