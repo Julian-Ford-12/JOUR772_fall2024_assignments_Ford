@@ -58,7 +58,8 @@ More often than not, we have more data than we want. Sometimes we need to be rid
 **Task** Run the following code to limit our courses to the Journalism school.
 
 ```{r}
-journalism_courses <- umd_courses |> filter(department == "Journalism")
+journalism_courses <- umd_courses |> 
+  filter(department == "Journalism")
 
 head(journalism_courses)
 ```
@@ -91,7 +92,7 @@ And now we only have two columns of data for whatever analysis we might want to 
 
 Notice that we made a new variable to hold the result. Why is that important?
 
-**Answer**
+**Answer To differentiate between the filtered variable and the selected variable.**
 
 ### Task 6: Combining filters
 
@@ -204,7 +205,7 @@ So the month of June 2022 had the most expenditures by far in this data.
 
 Describe the values in the new `month` column - what do you think is going on there?
 
-**Answer**
+**Answer If I'm being honest, I don't see a huge change – since we didn't group by any date value, it's not like the column changed much. Of course, I suppose mutating allowed us to create this new "month" column from the original expenditure_date column, so that's something.**
 
 ### Task 10: Mutate
 
@@ -230,11 +231,13 @@ general_22 <- general_22 |>
     total_votes = cox + moore + lashar + wallace + write_ins,
     pct_moore = moore/total_votes
   )
+
+head(general_22)
 ```
 
 Describe what you think this code is doing below.
 
-**Answer**
+**Answer: the mutate function seems to be creating a new column (total_votes) by using the sum of the gathered votes for each gov., and then making another new column (pct_moore) by dividing Moore's total_votes value against the entire total_votes column.**
 
 ### Task 11: Better percentage calculation
 
@@ -246,6 +249,8 @@ general_22 <- general_22 |>
   mutate(
     pct_moore = (moore/total_votes)*100
   )
+
+head(general_22)
 ```
 
 ### Task 12: Mutate with ordering
@@ -259,11 +264,13 @@ general_22 <- general_22 |>
     pct_moore = (moore/total_votes)*100
   ) |>
   arrange(desc(pct_moore))
+
+head(general_22)
 ```
 
 How did the answer change from the previous task, and why?
 
-**Answer**
+**Answer: Actually, it doesn't look like it changed at all. It appears as though the previous table was already arranged in descending order.**
 
 ### Task 13: Mutate with ordering, part 2
 
@@ -277,7 +284,7 @@ general_22 |>
 
 Is this a more interesting or useful answer? Why?
 
-**Answer**
+**Answer: it doesn't seem particularly more useful than the prior answer: they both give the same info, just with a different view.**
 
 ### Task 14: Standardize existing data using mutate
 
@@ -296,9 +303,15 @@ standardized_maryland_expenses <- maryland_expenses |>
   mutate(
     payee_upper = str_to_upper(payee_name)
 )
+
+head(standardized_maryland_expenses)
 ```
 
 **Task** Search the Internet for tidyverse functions similar to str_to_upper. Name at least two and describe what they do. If you use ChatGPT for this, include the question you submitted.
+
+str_to_lower(): converts a string to lowercase.
+
+str_to_sentence():converts a string to capitalize the first case of the "sentence."
 
 **Answer**
 
@@ -328,6 +341,8 @@ maryland_expenses_with_state <- maryland_expenses |>
         .default = NA
       )
   )
+
+head(maryland_expenses_with_state)
 ```
 
 There's a lot going on here, so let's unpack it. It starts out as a typical mutate statement, but `case_when` introduces some new things. Each line checks to see if the pattern is contained in the address column, followed by `~` and then a value for the new column for records that match that check. You can read it like this: "If we find ' Maryland ' in the address column, then put 'MD' in the state column" for Maryland and then a handful of states, and if we don't match any state we're looking for, make state `NA`.
@@ -345,7 +360,7 @@ maryland_expenses_with_state |>
 
 Does this answer make sense to you? Why or why not?
 
-**Answer**
+**Answer: I think so. I understand that we group by our new mutated column (state), and that summarize was able to calculate the total amount of expenses by state through the sum() function.**
 
 Mutate is there to make your data more useful and to make it easier for you to ask more and better questions of it.
 
@@ -355,8 +370,8 @@ Now that you have seen how to use mutate, filtering and dates, give me three que
 
 **Answer**
 
-1.  
+1.  Using the boolean/greater than filter functions (along with maybe mutate), how many out-of-state expenses were 500?
 
-2.  
+2.  Using the mutate function to create percentages, what is the percentage of English courses taught each semester, and how does this percentage change over the years?
 
-3.  
+3.  How many of the expenses being paid in the maryland_expenses data are coming from Baltimore? How many from Annapolis? How many from (insert city/town name here)
