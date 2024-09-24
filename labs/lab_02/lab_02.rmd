@@ -74,31 +74,83 @@ arrange(desc(count_classes))
 
 ```{r}
 maryland_expenses |> 
-  mutate(expenditure_date=mdy(expenditure_date))
-
-
+  mutate(expenditure_date=mdy(expenditure_date))|>
+  mutate(month = floor_date(expenditure_date, "month"))|>
+  group_by(month)|>
+  filter(committee_name == "Moore  Wes For Maryland")|>
+  summarise(total_amount=sum(amount))|>
+  arrange(desc(month))
+  
 
 
 ```
 
-**A3**
+**A3 In general, I notice a rise in spending from February (438433.3) to November (735543.1), with massive expenditure bumps in June (1540550), July (1027238) and October (3119129). It makes sense that the data would abruptly end in November, as this would signal the end of the Moore campaign.**
 
 ------------------------------------------------------------------------
 
 ### **Q4** Using case_when(), create a column in the Maryland expenses data called `spending_location` indicating whether each record indicated money spent in Maryland or outside Maryland. For records that are in Maryland, make the new column's value "In-state" and for the others, make it "Out of state". Then write code that shows the total amount of money spent in each category and describe the results. You can do this in one statement or break it up into two statements (saving the new column to your dataframe).
 
 ```{r}
+maryland_expenses <- maryland_expenses|>
+  mutate(spending_location = case_when(
+    str_detect(address, " Maryland ") ~ "In-state",
+    str_detect(address, " California ") ~ "Out of state",
+    str_detect(address, " Washington ") ~ "Out of state",
+    str_detect(address, " Louisiana ") ~ "Out of state",
+    str_detect(address, " Florida ") ~ "Out of state",
+    str_detect(address, " North Carolina ") ~ "Out of state",
+    str_detect(address, " Massachusetts ") ~ "Out of state",
+    str_detect(address, " West Virginia ") ~ "Out of state",
+    str_detect(address, " Virginia ") ~ "Out of state",
+    .default = NA
+    )
+  ) 
+  
+  spending_location_results <- maryland_expenses |>
+  group_by(spending_location)|>
+  summarise( 
+    total_amount=sum(amount))
+
+
+
 
 ```
 
-**A4**
+**A4 This one was particularly tricky, and I decided to experiment with the code towards the end, as should be evident by the new "spending_location_results" dataset. I did that so that I might preserve the original maryland_expenses data (which has 15 variables already) while still being able to aggregate with the group_by function. This very well may be terrible coding practice or something, and it might have been needlessly complicated – I kind of did it based on instinct. Anyways, if my code is correct, then in-state spending comes out to 77723146, versus the out of state amount, 33164994.**
 
 ------------------------------------------------------------------------
 
 ### **Q5** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab.
 
 ```{r}
+baltimore_expenses <- maryland_expenses|>
+  filter(str_detect(address, "Baltimore"))
+
+annapolis_expenses <- maryland_expenses|>
+  filter(str_detect(address, "Annapolis"))
+
+hagerstown_expenses <- maryland_expenses|>
+  filter(str_detect(address, "Hagerstown"))
+
+maryland_expenses <- maryland_expenses|>
+  mutate(baltimore = str_detect(address, "Baltimore"))
+
+ maryland_expenses|>
+   group_by(baltimore)|> 
+   filter(str_detect(baltimore, "TRUE"))|>
+   summarise(
+     count_baltimore=n()
+   )
+ 
+ hagerstown_expenses|>
+   filter(str_detect(payee_name, "BJ"))
+
 
 ```
 
-**A5**
+**A5 Q:** How many of the expenses being paid in the maryland_expenses data are coming from Baltimore? How many from Annapolis? How many from (insert city/town name here)
+
+Answer: Okay, so I decided to go a few different routes with this question, just to see what I could do with some of my RStudio knowledge. First, following a similar logic to Q4, I decided to break off each instance of a given address (Bmore, Htown, Annapolis, etc) into their own seperate data sets, which allowed me to view all the expenses coming from each town by themselves. This seemed useful because, in essence, it allowed me to do all the same things we did for all of Maryland, but on a town-by-town level. Similarly, each data set revealed (in a roundabout way) how many observations of each town might be in the "parent" maryland_expenses data set. For example, baltimore_expenses has 8452 observations, which means Baltimore accounts for 8.6% of the original maryland_expenses data set. This, however, seemed like a rather roundabout way of getting the answer, and I wanted to see if I could find a more direct answer to the question. To do this, I mutated the maryland_expenses data set to reflect instances of Baltimore within the data, creating a new "true/false" column. From here, I filtered the data to only show instances of "true", and summarised the column. Well, wouldn't you know it, it comes out to 8452... I think you could go further with this column, such as incorporating the count_baltimore into some math formulas to find the percentage paid by Baltimore vs. the rest of the state, but as it stands I'm pretty proud of what I was able to pull off here.
+
+And on a final note, I also went ahead and filtered out the hagerstown_expenses data set to only show the place where my mom works. That wasn't really a part of the question, but hey... kinda cool.
