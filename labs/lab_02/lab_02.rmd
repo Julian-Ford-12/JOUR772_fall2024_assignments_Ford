@@ -36,26 +36,48 @@ maryland_expenses <- read_csv("data/maryland_expenses.csv")
 ### **Q1** How many departments have offered the courses with "Climate" in the title and at least one seat? Which department has offered the most?
 
 ```{r}
+climate_courses <- umd_courses |>
+  filter(str_detect(title, "Climate") & seats >= 1)|>
+
+group_by(department)|>
+  summarize(
+    count_classes = n()
+  )|>
+arrange(desc(count_classes))
+
 
 ```
 
-**A1**
+**A1 According to the code I've run above (which might be wrong!), the Atmospheric and Oceanic Science department offers the most courses with the term "climate" in the title, sitting at a comfortable 68. Even though I'm not totally sure whether or not my code is right, this seems, intuitively, like the correct answer.**
 
 ------------------------------------------------------------------------
 
 ### **Q2** Which departments have the most courses in the Fall 2023 term? And which departments in that term have at least one syllabus posted? How are the top departments different in each result? Where is Journalism in those results?
 
 ```{r}
+fall_23_courses <- umd_courses |>
+  filter (term == 202308 & syllabus_count >= 1)|>
+  group_by(department)|>
+  summarise(
+    count_classes = n()
+  )|>
+arrange(desc(count_classes))
+
 
 ```
 
-**A2**
+**A2 It looks like, overall, Business and Management offered the most courses in the Fall 2023 semester, with 82 observations that I can see. Behind that is Economics with 50, and then the School of Music with 48. In this instance, Journalism offers 12 courses. If I remove the "syllabus_count" boolean however, I find a different story: 164 for Business and Management, 137 for the School of Music, and (the English major in me is proud to say) 120 in English. In this result, Journalism shoots way up to 110, a result of (I would hypothesize) the amounts of internships offered by the department – semester-long work with outside papers, CNS bureaus, etc etc.**
 
 ------------------------------------------------------------------------
 
 ### **Q3** Using the Maryland campaign expenses data, change the datatype of the expenditure_date column so that it is a date and not a chr. Then create a new column for the month based on expenditure_date. Then write code that shows total amount spent each month by Wes Moore's committee (you'll need to search the data to find the exact name). Write a sentence describing the pattern of spending over time.
 
 ```{r}
+maryland_expenses |> 
+  mutate(expenditure_date=mdy(expenditure_date))
+
+
+
 
 ```
 
