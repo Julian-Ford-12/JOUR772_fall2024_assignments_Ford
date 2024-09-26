@@ -33,7 +33,7 @@ library(tidyverse)
 
 ### Task 2: Load data
 
-**Task** Load some [Maryland state government payments data](https://opendata.maryland.gov/Budget/State-of-Maryland-Payments-Data-FY2008-to-FY2024/7syw-q4cy) by running the following code. We'll use the guess_max() function as an argument to use the first 10 rows to set the data type. What does the first line of the red Warning message that prints out when you load the data say? What happens when you follow its instructions? Answer below. **Answer**
+**Task** Load some [Maryland state government payments data](https://opendata.maryland.gov/Budget/State-of-Maryland-Payments-Data-FY2008-to-FY2024/7syw-q4cy) by running the following code. We'll use the guess_max() function as an argument to use the first 10 rows to set the data type. What does the first line of the red Warning message that prints out when you load the data say? What happens when you follow its instructions? Answer below. **Answer In the console, I see a warning that tells me I'm having "one or more parsing issues", and that I can call problems() on the data frame to see the issue.**
 
 ```{r}
 payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv", guess_max=10)
@@ -41,7 +41,7 @@ payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv
 
 ### Task 3: Reload data
 
-**Task** Run the following codeblock to reload the data, using every row to set the data types. Does it show any parsing errors when you run? Answer below **Answer**
+**Task** Run the following codeblock to reload the data, using every row to set the data types. Does it show any parsing errors when you run? Answer below **Answer No, not in the console.**
 
 ```{r}
 payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv", guess_max=373564)
@@ -50,6 +50,10 @@ payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv
 ### Task 4: Examine the data with glimpse
 
 **Task** Run the following codeblock to glimpse the data. What data type is the "Vendor Name" field? What data type is the "Amount" field? What data type is the "Date" column? Answer below. **Answer**
+
+Vendor type: \<chr\>, character \
+Amount: \<dbl\>, which according to Google means "double precision"?\
+Date: \<chr\>, character (will have to lubridate)
 
 ```{r}
 glimpse(payments)
