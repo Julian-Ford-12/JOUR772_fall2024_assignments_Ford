@@ -19,6 +19,8 @@ options(scipen=999)
 library(tidyverse)
 # Load janitor
 library(janitor)
+
+library(dplyr)
 ```
 
 ## Load data and clean up the column names
@@ -37,10 +39,14 @@ payments <- payments |>
 md_grants_loans <- md_grants_loans |>
   clean_names()
 
-md_grants_loans |>
-  filter(grantee == "Prince George County Schools" | "PG County Schools")
-#wtf
 
+```
+
+```{r}
+payments |>
+  filter(
+    str_detect(
+    agency_name, "PRINCE GEORGES COUNTY SCHOOLS" | "PG COUNTY SCHOOLS" | "PRINCE GEORGE COUNTY PUBLIC SCHOOLS"))
 ```
 
 Q1: You want to know how much money state agencies have paid to the Prince George's County School system, but to do that you'll need to find all of the variations of how the school system might be listed. Write code to find rows where the vendor name contains the county's school system, starting with a broad search and then narrowing it down. When you have found as many as possible, save the result to a new dataframe called `pg_schools`. How many records did you find?
