@@ -29,24 +29,30 @@ Load the two datasets we worked with in the pre_lab: the Maryland payments to ve
 
 ```{r}
 
-payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv")
-
-md_grants_loans <- read_csv("data/State_of_Maryland_Grant_and_Loan_Data__FY2009_to_FY2022.csv")
-
-payments <- payments |>
+payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv")|>
   clean_names()
 
-md_grants_loans <- md_grants_loans |>
+md_grants_loans <- read_csv("data/State_of_Maryland_Grant_and_Loan_Data__FY2009_to_FY2022.csv")|>
   clean_names()
 
 
 ```
 
 ```{r}
-payments |>
+school_payments <- payments |>
   filter(
     str_detect(
-    agency_name, "PRINCE GEORGES COUNTY SCHOOLS" | "PG COUNTY SCHOOLS" | "PRINCE GEORGE COUNTY PUBLIC SCHOOLS"))
+    agency_name, "SCHOOL"))
+
+pg_county_schools <- school_payments|>
+  filter(
+    str_detect(vendor_name, "PRINCE GEORGE COUNTY PUBLIC SCHOOLS") | 
+    str_detect(vendor_name, "PRINCE GEORGE PUBLIC") | 
+    str_detect(vendor_name, "PG COUNTY") |
+    str_detect(vendor_name, "PRINCE GEORGE'S COUNTY") |
+    str_detect(vendor_name, "PRINCE GEORGE'S COUNTY PUBLIC SCHOOLS") 
+  )
+
 ```
 
 Q1: You want to know how much money state agencies have paid to the Prince George's County School system, but to do that you'll need to find all of the variations of how the school system might be listed. Write code to find rows where the vendor name contains the county's school system, starting with a broad search and then narrowing it down. When you have found as many as possible, save the result to a new dataframe called `pg_schools`. How many records did you find?
@@ -58,6 +64,10 @@ Q2: Using that `pg_schools` dataframe, write code to calculate the total amount 
 A2:
 
 ```{r}
+pg_county_schools |>
+  group_by(date)|>
+  arrange(desc(amount))
+
 ```
 
 Q3. You're interested in examining the vendors paid for capital projects at the University of Maryland. Search the payments data to find those payments, then write code to produce a list of each vendor and the total amount it received. Look carefully at that list - what cleaning will it require to ensure that you have only one row per vendor and zip code? Provide at least three examples of vendor names that are similar and should be combined into one. Describe how you might clean that data so that any nearly identical vendors would look identical - what would you change and how?
@@ -66,8 +76,11 @@ A3.
 
 ```{r}
   payments |>
-    filter(str_detect(agency_name, "CAPITAL PROJECT"))
-    #get_dupes()
+    filter(
+      str_detect(agency_name, "CAPITAL PROJECT") &
+      str_detect(agency_name, "UNIVERSITY OF MARYLAND"))|>
+    
+    get_dupes()
     
 ```
 
@@ -76,4 +89,17 @@ Q4: You want to understand how much state grant money went to stem cell research
 A4:
 
 ```{r}
+stem_cell_loans <- md_grants_loans |>
+  mutate(description = str_to_lower(description))|>
+  filter(str_detect(description, "stem cell"))|>
+  arrange(desc(fiscal_year))
+  
+  stem_cell_loans |>
+  group_by(fiscal_year)|>
+  summarise(
+    count = n(),
+    sum=sum(amount)
+  )
+
+    
 ```
