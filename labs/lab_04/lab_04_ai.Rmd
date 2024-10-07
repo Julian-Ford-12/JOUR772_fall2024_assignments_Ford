@@ -157,7 +157,7 @@ code_judgement
 ```{r}
 #Add code below to talk to Groq and display its response
 moco_dataset <- axolotr::ask(
-  
+  prompt = paste("Groq, I have a data set from Maryland's Montgomery County")
 )
 
 ```
