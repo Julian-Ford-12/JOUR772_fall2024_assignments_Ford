@@ -89,8 +89,10 @@ A3.
 
 ```{r}
 emergency_calls |>
-  group_by(address)
-summarise()
+  group_by(address)|>
+  summarise(
+    count = n()
+    )
 
 ```
 
