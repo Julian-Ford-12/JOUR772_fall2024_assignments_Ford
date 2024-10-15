@@ -55,7 +55,7 @@ emergency_calls <- read_csv("tabula-Baltimore County; Carey, Samantha log OD.csv
 
 Q1. Write code to generate the number of calls that occurred on each date. Which date in 2022 had the most overdose calls, and how many? Look at the total number of rows in your result and explore the range of dates - based on your result, do you believe there are any days with no overdose calls at all? Explain why or why not.
 
-A1.
+A1. It appears that 07/14/2022 is tied with 10/04/2022 for the most calls, both sitting at 23 total. Regarding days with no calls, arranging this code by descending order of date instead of calls reveals that the first call was recorded 02/06/2022, and the last on 02/06/2023. That's an even 365 days, and when counting the first date (02/06/2022), it should come out to 366. Wouldn't you know it, the code below comes out to 366 rows. With this in mind, I'm pretty positive that, depressing as it sounds, there wasn't a single day in the 2022-2023 records that didn't see an overdose report.
 
 ```{r}
 emergency_calls |>
