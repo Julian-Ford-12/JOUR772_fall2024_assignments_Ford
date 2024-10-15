@@ -119,5 +119,8 @@ maryland_zcta <- maryland_zcta |> mutate(ZCTA5N = as.character(ZCTA5N))
 ### Task 10: Now it's your turn: join this dataframe to other zip code data where the zip code column is text, not numbers.
 
 ```{r}
+assessments <- read_csv("data/assessment.csv")
 
+maryland_zcta <- maryland_zcta |> 
+  left_join(assessments, join_by(ZCTA5N==zipcode))
 ```
