@@ -68,7 +68,7 @@ arrange(desc(calls_total))
 
 Q2. You want to understand if there's a pattern in the day of the week that overdose calls are made. Add a column to your dataframe that displays what day of the week each date represents. You should search for how to do that using lubridate. Then write code to calculate the number of calls for each day of the week, and add a column to that result that calculates the percentage of all calls that occurred on each day of the week (so you want a dataframe with the day of the week, total number of calls and the percentage of calls on that day out of the total number of all calls). Describe your findings to me.
 
-A2.
+A2. According to my code, Saturday and Sunday have the highest percentage of overdose calls at 15.51% and 15.1%, respectively. This percentage drops off gradually until we reach Thursday, lowest in the data, sitting at 12.79%. Makes sense to me – people would most likely be using drugs the most on their days off, which says something about how disturbingly mundane addiction can be.
 
 ```{r}
 emergency_calls |>
@@ -85,17 +85,18 @@ arrange(desc(calls))|>
 
 Q3. Now let's look at locations. Which ones have the most calls? How would you describe them (feel free to search for more information on them)? Is there anything about the structure of the original data that might make you less confident in the counts by location or date?
 
-A3.
+A3. It looks to me like 4540 Silver Spring Road is has the most call counts overall, which looks to be an address in the White Marsh suburb of Baltimore. It makes sense – according to Google, Baltimore represents 44% of the overdose deaths in MD, even though it's only 9% of the population. Strangely enough, the 2nd and 3rd highest rates are both from addresses with a "PC" label. PC 02; 6424 Windsor Mill, as well as PC 06; 115 Susquehanna Av W, both appear to be police departments. Now, I can only surmise as to why calls are coming *from* the police department, but my guess would be that some overdose calls are being reported there rather than their source location. As such, although the data set seems quite strong, I have to wonder how often this problem comes up across the 4112 observations – that is to say, how often is a call coming from a shelter, police department, etc, rather than the actual overdose source?
 
 ```{r}
 emergency_calls |>
   group_by(address)|>
   summarise(
     count = n()
-    )
+    )|>
+arrange(desc(count))
 
 ```
 
 Q4. What's the best story idea or question you've seen as a result of the work you've done in this lab?
 
-A4.
+A4. I'd be quite compelled to look a little deeper into percentages and rates within the emergency_calls dataset. If you wanted to do more research (a lot more, it might take some significant work), you could mutate a new column to represent the county, city, town, and/or unincorporated township for each call. From there, you could quite easily find which sections of Maryland represent the most rampant drug overdose calls, at least within the source. From here, several avenues of inquiry open. One might ask "which areas are being impacted more than others? Which sub-sections of Baltimore/Washington County/Moco/PG County are being disproportionately represented in the data, and why might that be?" Of course, you could also do something a little more longitudinal. Here are the areas that were impacted up to 2022, now let's go find a new data set and compare with the old. Are things much the same, or have any percentages shifted?
