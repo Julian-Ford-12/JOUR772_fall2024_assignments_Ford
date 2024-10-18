@@ -25,6 +25,10 @@ In this notebook, we are reverse engineering the story, [STORY NAME](STORY%20URL
 Loading required libraries for this analysis.
 
 ```{r echo=FALSE, message=FALSE}
+library(janitor)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
 
 ```
 
@@ -36,7 +40,9 @@ In this section, describe the source of the data, write a basic data dictionary 
 # Load required data
 
 # Path to data should be loaded from folder "data" i.e. read_csv("data/name_of_data.csv")
-
+population_by_age <- read_csv('sb152xr1685/population-by-age.csv') |> clean_names()
+private_enrollment_by_grade <- read_csv('sb152xr1685/private-enrollment-by-grade.csv') |> clean_names()
+public_enrollment_by_grade <- read_csv('sb152xr1685/public-enrollment-by-grade.csv') |> clean_names()
 # Clean required data and prepare for analysis if needed. 
 
 
@@ -48,24 +54,94 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 ### Sentence 1
 
--   **Sentence text**: [Paste in sentence to engineer here]
+-   **Sentence text**: Overall, public school enrollment fell by over 700,000 students between the 2019-2020 and 2021-2022 school years in the 21 states plus Washington, D.C., that provided the necessary data.
 -   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
 
 ```{r}
 # Put code to reverse engineer sentence here
+ pub_enroll_with_state_count <- public_enrollment_by_grade|>
+   mutate(used_state = case_when(
+    str_detect(st, "CA") ~ "true",
+    str_detect(st, "NY") ~ "true",
+    str_detect(st, "LA") ~ "true",
+    str_detect(st, "NC") ~ "true",
+    str_detect(st, "WA") ~ "true",
+    str_detect(st, "CO") ~ "true",
+    str_detect(st, "GA") ~ "true",
+    str_detect(st, "MN") ~ "true",
+    str_detect(st, "WI") ~ "true",
+    str_detect(st, "NH") ~ "true",
+    str_detect(st, "MA") ~ "true",
+    str_detect(st, "MT") ~ "true",
+    str_detect(st, "DE") ~ "true",
+    str_detect(st, "ND") ~ "true",
+    str_detect(st, "DC") ~ "true",
+    str_detect(st, "SD") ~ "true",
+    str_detect(st, "SC") ~ "true",
+    str_detect(st, "NE") ~ "true",
+    str_detect(st, "RI") ~ "true",
+    str_detect(st, "TN") ~ "true",
+    str_detect(st, "PA") ~ "true",
+    str_detect(st, "FL") ~ "true",
+    .default = "false"
+   ))
 
+  pub_enroll_with_state_count|>
+    filter(used_state=="true")|>
+    filter(grade=="k_12_total")|>
+    group_by(sch_year)|>
+    summarise(
+      total=sum(enrollment, na.rm = TRUE))|>
+    arrange(desc(total))
+  
+  24081631-24786224
 # Display results of code below this codeblock
 
 ```
 
 ### Sentence 2
 
--   **Sentence text**: [Paste in sentence to engineer here]
+-   **Sentence text**: Those states saw private-school enrollment grow by over 100,000 students.
 -   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
 
 ```{r}
 # Put code to reverse engineer sentence here
-
+ priv_enroll_with_state_count <- private_enrollment_by_grade|>
+   mutate(used_state = case_when(
+    str_detect(state, "CA") ~ "true",
+    str_detect(state, "NY") ~ "true",
+    str_detect(state, "LA") ~ "true",
+    str_detect(state, "NC") ~ "true",
+    str_detect(state, "WA") ~ "true",
+    str_detect(state, "CO") ~ "true",
+    str_detect(state, "GA") ~ "true",
+    str_detect(state, "MN") ~ "true",
+    str_detect(state, "WI") ~ "true",
+    str_detect(state, "NH") ~ "true",
+    str_detect(state, "MA") ~ "true",
+    str_detect(state, "MT") ~ "true",
+    str_detect(state, "DE") ~ "true",
+    str_detect(state, "ND") ~ "true",
+    str_detect(state, "DC") ~ "true",
+    str_detect(state, "SD") ~ "true",
+    str_detect(state, "SC") ~ "true",
+    str_detect(state, "NE") ~ "true",
+    str_detect(state, "RI") ~ "true",
+    str_detect(state, "TN") ~ "true",
+    str_detect(state, "PA") ~ "true",
+    str_detect(state, "FL") ~ "true",
+    .default = "false"
+   ))
+ 
+   priv_enroll_with_state_count|>
+    filter(used_state=="true")|>
+    filter(grade=="k_12_total")|>
+    group_by(sch_year)|>
+    summarise(
+      total=sum(enrollment, na.rm = TRUE))|>
+    arrange(desc(total))
+   
+   2332644-2435491	
 # Display results of code below this codeblock
 
 ```
