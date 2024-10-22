@@ -76,7 +76,7 @@ A1. It appears that Carroll county has the most calls, clocking in at 448. Cecil
 
 Then calculate the most calls per county and location. Which location had the most calls - where and what is that location?
 
-A2.
+A2. It looks to me like 314 Grove Neck Road in Earleville, MD (Cecil County) had the most calls, with 15 from this location alone. It doesn't surprise me very much, as the group_by month data reveals Cecil to have the overall highest rate of 911 calls, sitting at 55 calls in just the month of August alone – which means 1.77 calls a day for that month. Maybe Grove Neck Road swayed the data?
 
 ```{r}
 county_calls_combined <- county_calls_combined |>
@@ -105,7 +105,7 @@ Add a column to your code that calculates the number of calls per 1,000 people f
 
 Which zip code has the highest rate of calls per 1,000 people? Find the neighborhoods in that zip code that are listed in the data - you can use group_by or distinct to do this. What are some of those neighborhoods?
 
-A3. Regarding the first part of the question, if my code's right, it appears that 2,704 calls were made in zip codes and locations where the percentage of the population under 18 equaled 75% or above.
+A3. Regarding the first part of the question, if my code's right, it appears that 2,704 calls were made in zip codes and locations where the percentage of the population under 18 equaled 75% or above. Generally speaking, these zip codes (21201, 21202, 21205, 21213, etc) all seem to be in the central part of the city, north of the inner harbor, which makes sense – I can imagine that area being a draw to young Baltimoreans. The zip code with the highest per capita code appears to be 21217, sitting at a statistically significant 20.856 per capita rate. That's quite a lot of calls per person. When filtering the entire dataset for the 21217 zip code, we can find some of the neighborhoods within that zip that show up most frequently. Penn North is the highest neighborhood count number, with 177, and Sandtown-Winchester is a close second at 174. Upon Googling Penn North, the very first thing that comes up is an article from CBS, desscribing the Penn North neighborhood as an "epicenter of unrest" within the city, so this seems to track. Some better news, though – apparently, as of March 6, 2024, the neighborhood had gone one whole year without a single reported murder. So... positive changes, here.
 
 ```{r}
 baltimore_911_under_18 <- baltimore_911_demos |>
@@ -123,8 +123,8 @@ baltimore_911_under_18|>
   
   baltimore_911_demos|>
   filter(zip_code=="21217")|>
-    group_by(zip_code, neighborhood)|>
-    summarise(
+  group_by(zip_code, neighborhood)|>
+   summarise(
       count=n()
     )|>
     arrange(desc(count))
@@ -134,7 +134,27 @@ baltimore_911_under_18|>
 
 ### Q4. Choose your own adventure: I want you to come up with a question you could ask of the Baltimore City data that combines both the calls and the demographic information. You must use both demographics and the overdose call data in your work.
 
-A4:
+A4: Is there any observable correlation between neighborhoods with high rates of home-ownership and overdose calls? How about rentals?
+
+It's a fairly simple question, I know, but I've still found some interesting results with the code I've written below. After making this new, significantly slimmer homeowner/renter data set, I have two main findigns. Generally speaking, it looks like there's an inverse relationship between home ownership rates and overdose calls, although this statement ignores some important outliers. The neighborhoods with the highest home ownership rates all clock in at 59.8%, and of these seven neighborhoods, only two have overdose call counts over 10 – Hamilton Hills with 12, and Westfield with 15. Just clicking through the dataset reveals this rough correlation to continue – most of the neighborhoods with home ownership over 50% don't have call rates climbing past even the single digits. There's one very sharp outlier, the Curtis Bay neighborhood, which has a 50.9% home ownership rate and a whopping 47 recorded calls. This is quite a break from the data, and would certainly be an area for further inquiry. Curtis Bay appears to be an industrial area south of Baltimore proper, nestled right between 895 and 695. Could the proximity to the beltways be involved? Maybe industrial factors?
+
+Moving on, there seems to be a positive correlation between renting and overdose call rates, although frankly this correlation doesn't seem as strong as the homeowner/call rate relationship. Certainly, the neighborhoods with higher call rates also have high renter percentages: Charles North (90.6%) sits at 32, Downtown (90.6%) has a shocking 114, Upton (90.6%) is at 38, etc. However, there are quite a few neighborhoods with very high rental rates and very low homeowner rates that boast relatively few call counts. Little Italy sits at a 77.2% rental rate and a 17.9% homeownership rate, yet only has 4 calls. Barre Circle and Bolton Hill both have a 90.6% rental rate and a 7.8% homeownership rate, and yet Barre has only 2 calls recorded, and Bolton only 1.
+
+I think that this data makes sense. Of course, this isn't a complete study here, and my methodology is too simple to reach any sort of definitive conclusion. With that said, it makes sense (to me) that homeownership would have a higher correlational relationship with 911 call rates than rental rates. Generally speaking, owning a home implies *some* level of financial stability – even relatively cheap homes are more expensive to maintain than rental units, which usually see maintanance costs taken care of by landlords. My understanding is also that financial stability correlates (once again, in a general sort of way) with lower systemic drug use within neighborhoods. Home ownership seems like a strong predictor of general financial stability within a neighborhood. With that said, after looking at the data, I have to think that rental rates don't serve this function nearly as effectively. People rent for a lot of reasons – rich folks that want to live by the water, student housing off-campus, etc etc. High rental rates don't necessarily reflect the socioeconomic status of the surrounding neighborhoods in the same way, and presupposing that socioeconomic status and overdose call rates are linked, this also means that rental rates wouldn't necessarily correlate strongly with overdose call amounts. There's certainly *some* kind of relationship there, but it seems weaker than what one might have first assumed. Now, once again, this is by no means an exhaustive study, but I think it poses some interesting questions for future research. What are the racial dynamics of home ownership and rental units? When factoring for demographic data (pct_hispanic, pct_under_18, etc etc.), how might these data sets change?
 
 ```{r}
+baltimore_911_rents_homes <- baltimore_911_demos |>
+  select(pct_homeowner, pct_rent, neighborhood)|>
+  group_by(pct_homeowner, pct_rent, neighborhood)|>
+  summarise(
+    count=n()
+  )
+
+baltimore_911_rents_homes|>
+  arrange(desc(pct_homeowner))
+
+baltimore_911_rents_homes|>
+  arrange(desc(pct_rent))
+
+
 ```
