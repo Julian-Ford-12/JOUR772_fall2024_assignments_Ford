@@ -33,7 +33,7 @@ To use the API, you need to [an API key from the Census Bureau](https://api.cens
 **Task** Replace YOUR KEY HERE in the codeblock below with your Census API Key (leave the quotemarks).
 
 ```{r echo=FALSE}
-census_api_key("PASTEAPIKEYHERE", install=TRUE)
+census_api_key("fb3aed4c1d6faecf3fceed192c76225983d3dacb", install=TRUE)
 ```
 
 ```{r}
@@ -179,8 +179,8 @@ md12 |>
   arrange(desc(change))
 ```
 
-### Task 7: 
+### Task 7:
 
 Question: based on the table above, which counties win most income between the periods ending in 2012 and 2022?
 
-**Add your answer here:**
+**Add your answer here: Baltimore city (43%), Garrett County (42.09%), and Allegany County (41.3%).**
