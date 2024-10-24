@@ -43,6 +43,7 @@ In this section, describe the source of the data, write a basic data dictionary 
 population_by_age <- read_csv('sb152xr1685/population-by-age.csv') |> clean_names()
 private_enrollment_by_grade <- read_csv('sb152xr1685/private-enrollment-by-grade.csv') |> clean_names()
 public_enrollment_by_grade <- read_csv('sb152xr1685/public-enrollment-by-grade.csv') |> clean_names()
+summary_file <- read_csv('sb152xr1685/summary_file.csv')
 # Clean required data and prepare for analysis if needed. 
 
 
