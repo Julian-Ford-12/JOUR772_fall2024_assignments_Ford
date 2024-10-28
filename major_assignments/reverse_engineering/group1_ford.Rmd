@@ -43,7 +43,7 @@ In this section, describe the source of the data, write a basic data dictionary 
 population_by_age <- read_csv('sb152xr1685/population-by-age.csv') |> clean_names()
 private_enrollment_by_grade <- read_csv('sb152xr1685/private-enrollment-by-grade.csv') |> clean_names()
 public_enrollment_by_grade <- read_csv('sb152xr1685/public-enrollment-by-grade.csv') |> clean_names()
-summary_file <- read_csv('sb152xr1685/summary_file.csv')
+summary_file <- read_csv('sb152xr1685/Enrollment Changes-Table 1.csv')|>clean_names()
 # Clean required data and prepare for analysis if needed. 
 
 
@@ -154,6 +154,41 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 ```{r}
 # Put code to reverse engineer sentence here
+homeschool <- summary_file |>
+  filter(enrollment_type == "Homeschool enrollment")
+
+homeschool_with_states <- homeschool |>
+mutate(used_state = case_when(
+    str_detect(state_abbrev, "CA") ~ "true",
+    str_detect(state_abbrev, "NY") ~ "true",
+    str_detect(state_abbrev, "LA") ~ "true",
+    str_detect(state_abbrev, "NC") ~ "true",
+    str_detect(state_abbrev, "WA") ~ "true",
+    str_detect(state_abbrev, "CO") ~ "true",
+    str_detect(state_abbrev, "GA") ~ "true",
+    str_detect(state_abbrev, "MN") ~ "true",
+    str_detect(state_abbrev, "WI") ~ "true",
+    str_detect(state_abbrev, "NH") ~ "true",
+    str_detect(state_abbrev, "MA") ~ "true",
+    str_detect(state_abbrev, "MT") ~ "true",
+    str_detect(state_abbrev, "DE") ~ "true",
+    str_detect(state_abbrev, "ND") ~ "true",
+    str_detect(state_abbrev, "DC") ~ "true",
+    str_detect(state_abbrev, "SD") ~ "true",
+    str_detect(state_abbrev, "SC") ~ "true",
+    str_detect(state_abbrev, "NE") ~ "true",
+    str_detect(state_abbrev, "RI") ~ "true",
+    str_detect(state_abbrev, "TN") ~ "true",
+    str_detect(state_abbrev, "PA") ~ "true",
+    str_detect(state_abbrev, "FL") ~ "true",
+    .default = "false"
+   ))
+
+  homeschool_with_states |>
+    filter(used_state == "true")|>
+    summarise(
+      total = sum(total_change, na.rm = TRUE)
+    )
 
 # Display results of code below this codeblock
 
