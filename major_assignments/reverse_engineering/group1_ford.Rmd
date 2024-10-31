@@ -95,7 +95,18 @@ In this notebook, we are reverse engineering five sentences from the story.
       total=sum(enrollment, na.rm = TRUE))|>
     arrange(desc(total))
   
-  24081631-24786224
+  pre_covid_publics <- pub_enroll_with_state_count |> 
+  filter(sch_year == "2019-2020") |>
+  filter(used_state == "true") |>
+  summarize(total = sum(enrollment, na.rm = TRUE))
+
+post_covid_publics <- pub_enroll_with_state_count |> 
+  filter(sch_year == "2021-2022") |>
+  filter(used_state == "true") |>
+  summarize(total = sum(enrollment, na.rm = TRUE))
+
+  
+pre_covid_publics - post_covid_publics
 # Display results of code below this codeblock
 
 ```
@@ -142,7 +153,18 @@ In this notebook, we are reverse engineering five sentences from the story.
       total=sum(enrollment, na.rm = TRUE))|>
     arrange(desc(total))
    
-   2332644-2435491	
+   pre_covid_privates <- priv_enroll_with_state_count |> 
+  filter(sch_year == "2019-2020") |>
+  filter(used_state == "true") |>
+  summarize(total = sum(enrollment, na.rm = TRUE))
+
+post_covid_privates <- priv_enroll_with_state_count |> 
+  filter(sch_year == "2021-2022") |>
+  filter(used_state == "true") |>
+  summarize(total = sum(enrollment, na.rm = TRUE))
+
+  pre_covid_privates - post_covid_privates
+   
 # Display results of code below this codeblock
 
 ```
