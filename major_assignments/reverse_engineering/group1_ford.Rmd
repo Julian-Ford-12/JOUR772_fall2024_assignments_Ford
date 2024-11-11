@@ -61,6 +61,7 @@ In this notebook, we are reverse engineering five sentences from the story.
 ```{r}
 # Put code to reverse engineer sentence here
  pub_enroll_with_state_count <- public_enrollment_by_grade|>
+   filter(grade == "k_12_total")|>
    mutate(used_state = case_when(
     str_detect(st, "CA") ~ "true",
     str_detect(st, "NY") ~ "true",
@@ -86,14 +87,6 @@ In this notebook, we are reverse engineering five sentences from the story.
     str_detect(st, "FL") ~ "true",
     .default = "false"
    ))
-
-  pub_enroll_with_state_count|>
-    filter(used_state=="true")|>
-    filter(grade=="k_12_total")|>
-    group_by(sch_year)|>
-    summarise(
-      total=sum(enrollment, na.rm = TRUE))|>
-    arrange(desc(total))
   
   pre_covid_publics <- pub_enroll_with_state_count |> 
   filter(sch_year == "2019-2020") |>
@@ -119,6 +112,7 @@ pre_covid_publics - post_covid_publics
 ```{r}
 # Put code to reverse engineer sentence here
  priv_enroll_with_state_count <- private_enrollment_by_grade|>
+   filter(grade == "k_12_total")|>
    mutate(used_state = case_when(
     str_detect(state, "CA") ~ "true",
     str_detect(state, "NY") ~ "true",
@@ -144,14 +138,6 @@ pre_covid_publics - post_covid_publics
     str_detect(state, "FL") ~ "true",
     .default = "false"
    ))
- 
-   priv_enroll_with_state_count|>
-    filter(used_state=="true")|>
-    filter(grade=="k_12_total")|>
-    group_by(sch_year)|>
-    summarise(
-      total=sum(enrollment, na.rm = TRUE))|>
-    arrange(desc(total))
    
    pre_covid_privates <- priv_enroll_with_state_count |> 
   filter(sch_year == "2019-2020") |>
@@ -224,17 +210,124 @@ mutate(used_state = case_when(
 ```{r}
 # Put code to reverse engineer sentence here
 
+school_population <- read_csv('sb152xr1685/school_population.csv') |> clean_names()
+counted_population <- school_population |> mutate(
+    counted_state = case_when(
+        str_detect(state, "California") ~ "true",
+        str_detect(state, "New York") ~ "true",
+        str_detect(state, "Louisiana") ~ "true",
+        str_detect(state, "North Carolina") ~ "true",
+        str_detect(state, "Washington") ~ "true",
+        str_detect(state, "Colorado") ~ "true",
+        str_detect(state, "Georgia") ~ "true",
+        str_detect(state, "Minnesota") ~ "true",
+        str_detect(state, "Wisconsin") ~ "true",
+        str_detect(state, "New Hampshire") ~ "true",
+        str_detect(state, "Massachusetts") ~ "true",
+        str_detect(state, "Montana") ~ "true",
+        str_detect(state, "Delaware") ~ "true",
+        str_detect(state, "North Dakota") ~ "true",
+        str_detect(state, "District of Columbia") ~ "true",
+        str_detect(state, "South Dakota") ~ "true",
+        str_detect(state, "South Carolina") ~ "true",
+        str_detect(state, "Nebraska") ~ "true",
+        str_detect(state, "Rhode Island") ~ "true",
+        str_detect(state, "Tennessee") ~ "true",
+        str_detect(state, "Pennsylvania") ~ "true",
+        str_detect(state, "Florida") ~ "true",
+        .default = "false",
+    )
+  ) 
+
+
+edit_private <- priv_enroll_with_state_count |> mutate(
+  state = case_when(
+        str_detect(state, "CA") ~ "CALIFORNIA",
+        str_detect(state, "NY") ~ "NEW YORK",
+        str_detect(state, "LA") ~ "LOUISIANA",
+        str_detect(state, "NC") ~ "NORTH CAROLINA",
+        str_detect(state, "WA") ~ "WASHINGTON",
+        str_detect(state, "CO") ~ "COLORADO",
+        str_detect(state, "GA") ~ "GEORGIA",
+        str_detect(state, "MN") ~ "MINNESOTA",
+        str_detect(state, "WI") ~ "WISCONSIN",
+        str_detect(state, "NH") ~ "NEW HAMPSHIRE",
+        str_detect(state, "MA") ~ "MASSACHUSETTS",
+        str_detect(state, "MT") ~ "MONTANA",
+        str_detect(state, "DE") ~ "DELAWARE",
+        str_detect(state, "ND") ~ "NORTH DAKOTA",
+        str_detect(state, "DC") ~ "DISTRICT OF COLUMBIA",
+        str_detect(state, "SD") ~ "SOUTH DAKOTA",
+        str_detect(state, "SC") ~ "SOUTH CAROLINA",
+        str_detect(state, "NE") ~ "NEBRASKA",
+        str_detect(state, "RI") ~ "RHODE ISLAND",
+        str_detect(state, "TN") ~ "TENNESSEE",
+        str_detect(state, "PA") ~ "PENNSYLVANIA",
+        str_detect(state, "FL") ~ "FLORIDA",
+        .default = "FALSE",
+    )
+  ) 
+
+Y19_privates <- edit_private |> filter(used_state == "true", sch_year == "2019-2020")
+
+Y21_privates <- edit_private |> filter(used_state == "true", sch_year == "2021-2022")
+
+join_privates <- Y19_privates |> left_join(Y21_privates, join_by(state)) 
+
+joined_privates <- join_privates |> mutate(private_change = enrollment.y - enrollment.x)
+
+Y19_publics <- pub_enroll_with_state_count |> filter(used_state == "true", sch_year == "2019-2020")
+
+Y21_publics <- pub_enroll_with_state_count |> filter(used_state == "true", sch_year == "2021-2022")
+
+join_publics <- Y19_publics |> left_join(Y21_publics, join_by(state))
+
+joined_publics <- join_publics |> mutate(public_change = enrollment.y - enrollment.x)
+
+caps_homeschool <- homeschool |> mutate(state = str_to_upper(state))
+
+counted_population_caps <- counted_population |> mutate(state = str_to_upper(state))
+
+all_joined_data <- joined_privates |> 
+  left_join(joined_publics, join_by(state)) |> 
+  left_join(caps_homeschool, join_by(state)) |>
+  left_join(counted_population_caps, join_by(state))
+
+all_joined_data <- all_joined_data |> select(private_change, public_change, total_change, change_in_school_aged_population_5_17)
+
+missing <- all_joined_data |> mutate(residual = (private_change + public_change + total_change - change_in_school_aged_population_5_17)) |> arrange(residual)
+
+missing |> summarize(sum(residual))
+
+
+
 # Display results of code below this codeblock
 
 ```
 
 ### Sentence 5
 
--   **Sentence text**: [Paste in sentence to engineer here]
+-   **Sentence text**: Finding the amount of missing students nationally, and not just in the
 -   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
 
 ```{r}
 # Put code to reverse engineer sentence here
+
+#school_population
+
+
+Y19_privates_overall <- private_enrollment_by_grade |> filter(sch_year == "2019-2020", grade == "k_12_total")
+Y21_privates_overall <- private_enrollment_by_grade |> filter(sch_year == "2021-2022", grade == "k_12_total")
+
+Y19_public_overall <- public_enrollment_by_grade |> filter(sch_year == "2019-2020", grade == "k_12_total")
+Y21_public_overall <- public_enrollment_by_grade |> filter(sch_year == "2021-2022", grade == "k_12_total")
+
+join_publics_overall <- Y19_public_overall |> left_join(Y21_public_overall, join_by(state))
+
+joined_publics_overall <- join_publics_overall |> mutate(public_change = enrollment.y - enrollment.x)
+
+
+
 
 # Display results of code below this codeblock
 
