@@ -67,6 +67,7 @@ md_absentee_ballots <- md_absentee_ballots |>
     theme(
     axis.text.x = element_text(angle = 45,  hjust=1)
   )+
+    coord_flip()+
   labs(
     title="Counties with Highest Percentage of Returned Ballots",
     x = "County",
@@ -86,25 +87,28 @@ md_absentee_ballots <- md_absentee_ballots |>
 **A2.**
 
 ```{r}
-  #need top ten counties for DEM voters
+  #need top ten lowest counties for DEM voters
   top_10_ballots_returned_Dem <- md_absentee_ballots|>
-    mutate()
-  arrange(asc(pct_returned))|>
-  head(10) 
+    mutate(pct_returned_dem = (dem_received/total_received), pct_returned_rep = (rep_received/total_received))|>
+  arrange(pct_returned_dem)|>
+    head(10)
+
   
   #Graph canvas here
-    top_10_ballots_returned|>
+    top_10_ballots_returned_Dem|>
     ggplot() +
-    geom_bar(aes(x=reorder(county_name, pct_returned), weight=pct_returned)) +
+    geom_bar(aes(x=reorder(county_name, pct_returned_dem), weight=pct_returned_dem)) +
     theme(
     axis.text.x = element_text(angle = 45,  hjust=1)
   )+
+      coord_flip()+
   labs(
     title="Counties with Highest Percentage of Returned Ballots",
     x = "County",
     y = "% returned ballots",
     caption = "source: Maryland State Board of Elections"
   )
+    #flip to horizontal in a sec
 ```
 
 **Q3** Let's make a line chart using the second set of absentee ballot data - this one tracking returns by date. We want to see received ballots for Frederick County for Democrats, Republicans and Others, so you'll make a chart with three lines, adding color to each one (you can choose, but choose sensibly). Give the chart a title and good labels. What's the story that this line chart tells? Compare and contrast the three lines. Does it match what you know about absentee voting habits?
@@ -112,7 +116,18 @@ md_absentee_ballots <- md_absentee_ballots |>
 **A3**
 
 ```{r}
-
+  md_absentee_fred <- md_absentee_ballots_date |>
+    filter(str_detect(county_name, "FREDERICK"))
+  
+  md_absentee_ballots_date|>
+    ggplot() + 
+    geom_line(aes(x=date, y=dem_received))
+  
+    md_absentee_fred|>
+    ggplot() + 
+    geom_line(aes(x=date, y=dem_received))
+  
+#I have literally no idea what's happening or why this isn't working. I struggled with this for a while, and I can't seem to even generate a proper line for either graph. 
 ```
 
 **Q4.** A scatterplot is a type of chart that helps us see relationships between two variables. One variable goes on the x axis, the other on the y axis. For each row/observation in our data, a scatterplot puts a circle (or a "point") where the two variables intersect on a grid.
@@ -136,6 +151,15 @@ Follow these steps:
 **A4.**
 
 ```{r}
-
+  md_absentee_ballots|>
+    ggplot(aes(x=dem_sent, y=dem_received))+
+    geom_point()+
+    geom_smooth(aes(method = "lm"))+
+    geom_text(aes(label = county_name), check_overlap = TRUE, size = 3)+
+  labs(
+    title="Relationship between sent and counted early voting democrat ballots",
+    x = "sent ballots",
+    y = "received ballots",
+  )
   
 ```

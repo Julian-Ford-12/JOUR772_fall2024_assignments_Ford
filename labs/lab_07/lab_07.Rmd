@@ -95,12 +95,21 @@ Which zip code has the highest rate of calls? Which has the lowest?
 ```{r}
 moco_911 <- read.csv("data/montgomery_2022_overdoses.csv")|> clean_names()
 
-moco_911|>
+moco_911_zipc_amounts <- moco_911|>
   group_by(zip)|>
   summarise(
     total=n()
   )|>
   arrange(desc(total))
+head(moco_911_zipc_amounts)
+
+#wrong variable for right now
+md_18_up <- get_acs(
+  geography = "county",
+  variables = c(age_18_to_19 = "B01001_007"),
+  year = 2021,
+  state = "Maryland"
+)
 ```
 
 **Answer here:**
